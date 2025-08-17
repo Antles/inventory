@@ -22,5 +22,5 @@ COPY nginx.conf /etc/nginx/templates/default.conf.template
 EXPOSE 80
 
 # The command to run when the container starts.
-# This will substitute environment variables in our config and then start Nginx.
-CMD ["/bin/sh", "-c", "envsubst '$backend_url' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+# This will substitute the BACKEND_HOSTPORT environment variable in our config and then start Nginx.
+CMD ["/bin/sh", "-c", "envsubst '${BACKEND_HOSTPORT}' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
