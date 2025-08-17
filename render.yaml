@@ -1,0 +1,50 @@
+# This is a Render Blueprint that defines the services for the inventory application.
+# Render will automatically create and deploy these services when you connect your GitHub repo.
+
+services:
+  # 1. The PostgreSQL Database
+  - type: pserv
+    name: inventory-db
+    # Use the latest stable version of PostgreSQL
+    postgres:
+      version: 15
+    # Render's free tier is sufficient for this project
+    plan: free
+
+  # 2. The Go Backend API
+  - type: web
+    name: inventory-backend
+    # Use the Go runtime environment
+    runtime: go
+    # Point to the directory containing the backend code
+    rootDir: ./inventory_backend
+    # The command to build the Go application
+    buildCommand: go build -o main .
+    # The command to start the server
+    startCommand: ./main
+    plan: free
+    # Define the environment variables the backend needs.
+    # Render automatically provides the database URL.
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: inventory-db
+          property: connectionString
+      # Render provides the PORT automatically, which our Go app already uses.
+
+  # 3. The React Frontend (as a Static Site served by Nginx)
+  - type: web
+    name: inventory-frontend
+    # Use the Docker runtime for our custom Nginx setup
+    runtime: docker
+    # Point to the directory containing the frontend code
+    rootDir: ./inventory-frontend
+    plan: free
+    # Define the environment variable for the Nginx proxy.
+    # Render automatically creates an internal URL for our backend service.
+    envVars:
+      - key: BACKEND_URL
+        fromService:
+          type: web
+          name: inventory-backend
+          property: url

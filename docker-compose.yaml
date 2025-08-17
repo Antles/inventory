@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # The PostgreSQL Database Service
+  db:
+    image: postgres:15-alpine
+    container_name: inventory_db
+    restart: always
+    environment:
+      POSTGRES_USER: inventory_user
+      POSTGRES_PASSWORD: cs499
+      POSTGRES_DB: inventory_db
+      # ** NEW: Force a more compatible authentication method for the driver **
+      POSTGRES_HOST_AUTH_METHOD: md5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U inventory_user -d inventory_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # The Go Backend API Service
+  backend:
+    container_name: inventory_backend
+    build:
+      context: ./inventory_backend
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: inventory_user
+      DB_PASSWORD: cs499
+      DB_NAME: inventory_db
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # The React Frontend Service
+  frontend:
+    container_name: inventory_frontend
+    build:
+      context: ./inventory_frontend
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
