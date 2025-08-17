@@ -25,6 +25,12 @@ func main() {
 
 	r := mux.NewRouter()
 
+	// Health check endpoint
+	r.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
+	}).Methods("GET")
+
 	// Authentication routes **
 	r.HandleFunc("/api/v1/users/register", RegisterHandler).Methods("POST")
 	r.HandleFunc("/api/v1/users/login", LoginHandler).Methods("POST")
@@ -38,8 +44,8 @@ func main() {
 	r.HandleFunc("/api/v1/items/{id:[0-9]+}", deleteItemHandler).Methods("DELETE")
 
 	// Define the allowed origins. For development, this is your React app's URL.
-	// For production, you would replace this with your actual frontend's domain.
-	allowedOrigins := handlers.AllowedOrigins([]string{"http://localhost:5173"})
+	// For production, allow all origins or specify your frontend domain
+	allowedOrigins := handlers.AllowedOrigins([]string{"*"}) // Allow all origins for now
 	allowedMethods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"})
 	allowedHeaders := handlers.AllowedHeaders([]string{"Content-Type", "Authorization"})
 
