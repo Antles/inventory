@@ -40,4 +40,4 @@ services:
         fromService:
           type: web
           name: inventory-backend
-        property: host
+          property: host
