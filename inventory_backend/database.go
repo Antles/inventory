@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	_ "github.com/lib/pq"
 )
@@ -17,7 +18,6 @@ var DB *sql.DB // A global variable to hold the database connection pool.
 
 // InitDB initializes the database connection pool.
 func InitDB() {
-	// ** UPDATED FOR RENDER **
 	// Render provides a single DATABASE_URL environment variable.
 	// We will use this directly if it exists.
 	connStr := os.Getenv("DATABASE_URL")
@@ -31,6 +31,13 @@ func InitDB() {
 			os.Getenv("DB_PASSWORD"),
 			os.Getenv("DB_NAME"),
 		)
+	} else {
+		// ** THIS IS THE FIX **
+		// If we are using the DATABASE_URL from Render, ensure SSL is required.
+		// Render's databases require secure connections.
+		if !strings.Contains(connStr, "sslmode") {
+			connStr += "?sslmode=require"
+		}
 	}
 
 	var err error
