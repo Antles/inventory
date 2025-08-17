@@ -34,9 +34,8 @@ services:
     # Define the environment variable for the Nginx proxy.
     # This correctly references the backend service.
     envVars:
-      - key: BACKEND_HOSTPORT # Using a more descriptive key name
+      - key: BACKEND_URL
         fromService:
           type: web
           name: inventory-backend
-          # ** UPDATED: Use the valid 'hostport' property instead of 'url' **
-          property: hostport
+          property: url
