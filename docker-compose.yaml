@@ -49,8 +49,9 @@ services:
     ports:
       - "5173:80"
     environment:
-      # Local development backend URL
-      BACKEND_URL: http://backend:8080
+  # Local development backend origin
+  BACKEND_SCHEME: http
+  BACKEND_HOSTPORT: backend:8080
     depends_on:
       - backend
 
