@@ -29,7 +29,7 @@ services:
   - type: web
     name: inventory-frontend
     runtime: docker
-    rootDir: ./inventory-frontend
+    rootDir: inventory-frontend
     plan: free
     # Define the environment variable for the Nginx proxy.
     # This correctly references the backend service.

@@ -17,14 +17,21 @@ var DB *sql.DB // A global variable to hold the database connection pool.
 
 // InitDB initializes the database connection pool.
 func InitDB() {
-	// Construct the database connection string from environment variables.
-	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_NAME"),
-	)
+	// ** UPDATED FOR RENDER **
+	// Render provides a single DATABASE_URL environment variable.
+	// We will use this directly if it exists.
+	connStr := os.Getenv("DATABASE_URL")
+
+	// Fallback to local .env file if DATABASE_URL is not set (for local development)
+	if connStr == "" {
+		connStr = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+			os.Getenv("DB_HOST"),
+			os.Getenv("DB_PORT"),
+			os.Getenv("DB_USER"),
+			os.Getenv("DB_PASSWORD"),
+			os.Getenv("DB_NAME"),
+		)
+	}
 
 	var err error
 	DB, err = sql.Open("postgres", connStr)
@@ -53,7 +60,7 @@ func createTables() {
         description TEXT
     );`
 
-	// ** NEW: SQL for users table **
+	// SQL for users table
 	createUsersTableSQL := `
     CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
