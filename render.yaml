@@ -1,7 +1,7 @@
 # This is a Render Blueprint that defines the services for the inventory application.
 # Render will automatically create and deploy these services when you connect your GitHub repo.
 
-# ** UPDATED: Databases are defined in their own top-level block **
+# Databases are defined in their own top-level block
 databases:
   - name: inventory-db
     plan: free # Render's free tier is sufficient for this project
@@ -34,8 +34,9 @@ services:
     # Define the environment variable for the Nginx proxy.
     # This correctly references the backend service.
     envVars:
-      - key: BACKEND_URL
+      - key: BACKEND_HOSTPORT # Using a more descriptive key name
         fromService:
           type: web
           name: inventory-backend
-          property: url
+          # ** UPDATED: Use the valid 'hostport' property instead of 'url' **
+          property: hostport
