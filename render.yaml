@@ -36,8 +36,8 @@ services:
     envVars:
       - key: BACKEND_SCHEME
         value: https
-      - key: BACKEND_HOSTPORT
+      - key: BACKEND_HOST
         fromService:
           type: web
           name: inventory-backend
-          property: hostport
+        property: host
